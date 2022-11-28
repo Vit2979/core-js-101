@@ -161,8 +161,9 @@ function convertToUpperCase(str) {
 }
 
 /**
- *  Извлекает электронные письма из одной строки со списком адресов электронной почты, разделенным точкой с запятой
- *
+
+ *Extracts e-mails from single string with e-mails list delimeted by semicolons
+  *Извлекает электронные письма , разделенным точкой с запятой
  * @param {string} str
  * @return {array}
  *
@@ -178,7 +179,6 @@ function convertToUpperCase(str) {
 function extractEmails(str) {
   return str.split(';');
 }
-
 
 /**
  * Returns the string representation of rectangle with specified width and height
