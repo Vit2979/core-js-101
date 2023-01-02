@@ -203,8 +203,12 @@ function extractEmails(str) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
+function getRectangleString(width, height) {
+  const top = `┌${'─'.repeat(width - 2)}┐\n`;
+  let middle = '';
+  for (let i = 0; i < height - 2; i += 1) middle += `│${' '.repeat(width - 2)}│\n`;
+  const bottom = `└${'─'.repeat(width - 2)}┘\n`;
+  return top + middle + bottom;
 }
 
 
@@ -224,8 +228,15 @@ function getRectangleString(/* width, height */) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  const lowerCaseAbc = 'abcdefghijklmnopqrstuvwxyz';
+  const upperCaseAbc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const arr = str.split('');
+  for (const i in arr) { // eslint-disable-line
+    if (lowerCaseAbc.indexOf(arr[i]) > -1)  arr[i] = lowerCaseAbc[(lowerCaseAbc.indexOf(arr[i]) + 13) % lowerCaseAbc.length]; // eslint-disable-line
+    else if (upperCaseAbc.indexOf(arr[i]) > -1) arr[i] = upperCaseAbc[(upperCaseAbc.indexOf(arr[i]) + 13) % upperCaseAbc.length]; // eslint-disable-line
+  }
+  return arr.join('');
 }
 
 /**
@@ -241,8 +252,8 @@ function encodeToRot13(/* str */) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function isString(value) {
+  return (Object.prototype.toString.call(value) === '[object String]');
 }
 
 
@@ -270,8 +281,12 @@ function isString(/* value */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const arr = ['A♣','2♣','3♣','4♣','5♣','6♣','7♣','8♣','9♣','10♣','J♣','Q♣','K♣',// eslint-disable-line
+ 'A♦','2♦','3♦','4♦','5♦','6♦','7♦','8♦','9♦','10♦','J♦','Q♦','K♦',// eslint-disable-line
+ 'A♥','2♥','3♥','4♥','5♥','6♥','7♥','8♥','9♥','10♥','J♥','Q♥','K♥',// eslint-disable-line
+ 'A♠','2♠','3♠','4♠','5♠','6♠','7♠','8♠','9♠','10♠','J♠','Q♠','K♠'];// eslint-disable-line
+  return arr.indexOf(value);
 }
 
 
@@ -291,4 +306,4 @@ module.exports = {
   encodeToRot13,
   isString,
   getCardId,
-};
+  };
