@@ -306,4 +306,4 @@ module.exports = {
   encodeToRot13,
   isString,
   getCardId,
-  };
+};
