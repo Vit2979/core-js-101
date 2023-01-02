@@ -1,149 +1,117 @@
-/* ************************************************************************************************
- *                                                                                                *
- * Please read the following tutorial before implementing tasks:                                   *
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer *
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object        *
- *                                                                                                *
- ************************************************************************************************ */
+/* *******************************************************************************************
+ *                                                                                           *
+ * Please read the following tutorial before implementing tasks:                              *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Numbers_and_dates#Date_object
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date     *
+ *                                                                                           *
+ ******************************************************************************************* */
 
 
 /**
- * Returns the rectangle object with width and height parameters and getArea() method
+ * Parses a rfc2822 string date representation into date value
+ * For rfc2822 date specification refer to : http://tools.ietf.org/html/rfc2822#page-14
  *
- * @param {number} width
- * @param {number} height
- * @return {Object}
+ * @param {string} value
+ * @return {date}
  *
- * @example
- *    const r = new Rectangle(10,20);
- *    console.log(r.width);       // => 10
- *    console.log(r.height);      // => 20
- *    console.log(r.getArea());   // => 200
+ * @example:
+ *    'December 17, 1995 03:24:00'    => Date()
+ *    'Tue, 26 Jan 2016 13:48:02 GMT' => Date()
+ *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function parseDataFromRfc2822(value) {
+  return new Date(value);
+}
+
+/**
+ * Parses an ISO 8601 string date representation into date value
+ * For ISO 8601 date specification refer to : https://en.wikipedia.org/wiki/ISO_8601
+ *
+ * @param {string} value
+ * @return {date}
+ *
+ * @example :
+ *    '2016-01-19T16:07:37+00:00'    => Date()
+ *    '2016-01-19T08:07:37Z' => Date()
+ */
+function parseDataFromIso8601(value) {
+  return new Date(value);
 }
 
 
 /**
- * Returns the JSON representation of specified object
+ * Returns true if specified date is leap year and false otherwise
+ * Please find algorithm here: https://en.wikipedia.org/wiki/Leap_year#Algorithm
  *
- * @param {object} obj
+ * @param {date} date
+ * @return {bool}
+ *
+ * @example :
+ *    Date(1900,1,1)    => false
+ *    Date(2000,1,1)    => true
+ *    Date(2001,1,1)    => false
+ *    Date(2012,1,1)    => true
+ *    Date(2015,1,1)    => false
+ */
+function isLeapYear(date) {
+  const year = date.getFullYear();
+  if (year % 4) return false;
+  if (!(year % 100) && (year % 400)) return false;
+  return true;
+}
+
+
+/**
+ * Returns the string representation of the timespan between two dates.
+ * The format of output string is "HH:mm:ss.sss"
+ *
+ * @param {date} startDate
+ * @param {date} endDate
  * @return {string}
  *
- * @example
- *    [1,2,3]   =>  '[1,2,3]'
- *    { width: 10, height : 20 } => '{"height":10,"width":20}'
+ * @example:
+ *    Date(2000,1,1,10,0,0),  Date(2000,1,1,11,0,0)   => "01:00:00.000"
+ *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,30,0)       => "00:30:00.000"
+ *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,20)        => "00:00:20.000"
+ *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
+ *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function timeSpanToString(startDate, endDate) {
+  return new Date(endDate.getTime() - startDate.getTime()).toISOString().slice(11, -1);
 }
 
 
 /**
- * Returns the object of specified type from JSON representation
+ * Returns the angle (in radians) between the hands of an analog clock
+ * for the specified Greenwich time.
+ * If you have problem with solution please read: https://en.wikipedia.org/wiki/Clock_angle_problem
  *
- * @param {Object} proto
- * @param {string} json
- * @return {object}
+ * SMALL TIP: convert to radians just once, before return in order to not lost precision
  *
- * @example
- *    const r = fromJSON(Circle.prototype, '{"radius":10}');
+ * @param {date} date
+ * @return {number}
  *
+ * @example:
+ *    Date.UTC(2016,2,5, 0, 0) => 0
+ *    Date.UTC(2016,3,5, 3, 0) => Math.PI/2
+ *    Date.UTC(2016,3,5,18, 0) => Math.PI
+ *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function angleBetweenClockHands(date) {
+  const minutes = date.getMinutes();
+  const hours = date.getUTCHours() % 12;
+  const minutesAngle = minutes * 6;
+  const hoursAngle = hours * 30 + minutes * 0.5;
+  let angleBetween = Math.abs(hoursAngle - minutesAngle);
+  if (angleBetween > 180) angleBetween = 360 - angleBetween;
+  return (Math.PI * angleBetween) / 180;
 }
-
-
-/**
- * Css selectors builder
- *
- * Each complex selector can consists of type, id, class, attribute, pseudo-class
- * and pseudo-element selectors:
- *
- *    element#id.class[attr]:pseudoClass::pseudoElement
- *              \----/\----/\----------/
- *              Can be several occurrences
- *
- * All types of selectors can be combined using the combination ' ','+','~','>' .
- *
- * The task is to design a single class, independent classes or classes hierarchy
- * and implement the functionality to build the css selectors using the provided cssSelectorBuilder.
- * Each selector should have the stringify() method to output the string representation
- * according to css specification.
- *
- * Provided cssSelectorBuilder should be used as facade only to create your own classes,
- * for example the first method of cssSelectorBuilder can be like this:
- *   element: function(value) {
- *       return new MySuperBaseElementSelector(...)...
- *   },
- *
- * The design of class(es) is totally up to you, but try to make it as simple,
- * clear and readable as possible.
- *
- * @example
- *
- *  const builder = cssSelectorBuilder;
- *
- *  builder.id('main').class('container').class('editable').stringify()
- *    => '#main.container.editable'
- *
- *  builder.element('a').attr('href$=".png"').pseudoClass('focus').stringify()
- *    => 'a[href$=".png"]:focus'
- *
- *  builder.combine(
- *      builder.element('div').id('main').class('container').class('draggable'),
- *      '+',
- *      builder.combine(
- *          builder.element('table').id('data'),
- *          '~',
- *           builder.combine(
- *               builder.element('tr').pseudoClass('nth-of-type(even)'),
- *               ' ',
- *               builder.element('td').pseudoClass('nth-of-type(even)')
- *           )
- *      )
- *  ).stringify()
- *    => 'div#main.container.draggable + table#data ~ tr:nth-of-type(even)   td:nth-of-type(even)'
- *
- *  For more examples see unit tests.
- */
-
-const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  id(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  class(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  attr(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
-
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
-  },
-};
 
 
 module.exports = {
-  Rectangle,
-  getJSON,
-  fromJSON,
-  cssSelectorBuilder,
+  parseDataFromRfc2822,
+  parseDataFromIso8601,
+  isLeapYear,
+  timeSpanToString,
+  angleBetweenClockHands,
 };
